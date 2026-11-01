@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodePalace | Log In</title>
+<link rel="stylesheet" href="WebwebsiteBCA.css">
+</head>
+<body>
+<main class="loginpage">
+<div class="loginbox">
+<a href="index.html" class="back">← HOME</a>
+<h1 id="title">Welcome back</h1>
+<p class="logintxt" id="sub">Log in</p>
+
+<form id="loginform" novalidate>
+<div class="signup-only" hidden>
+<label for="name">Full name</label>
+<input type="text" id="name" placeholder="Your name" autocomplete="off">
+</div>
+
+<label for="email">Email address</label>
+<input type="email" id="email" placeholder="name@example.com" autocomplete="off">
+
+<label for="pass">Password</label>
+<input type="password" id="pass" placeholder=" 6 characters" autocomplete="off">
+
+<div class="signup-only" hidden>
+<label for="cpass">Confirm password</label>
+<input type="password" id="cpass" placeholder="Type again" autocomplete="off">
+
+<label for="dob">Date of birth</label>
+<input type="date" id="dob" autocomplete="off">
+
+<label for="gender">Gender</label>
+<select id="gender">
+<option value="">Choose one</option>
+<option>Female</option>
+<option>Male</option>
+</select>
+
+<label class="check"><input type="checkbox" id="terms"> I agree to the terms and conditions</label>
+</div>
+
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+<button type="submit" class="loginbtn" id="submitbtn">Log in</button>
+<button type="reset" class="resetbtn">Clear form</button>
+</form>
+
+<p class="logintxt" style="margin:22px 0 0">
+<span id="switchtext">New to CodePalace?</span>
+<button type="button" class="linkbtn" id="switch">Create an account</button>
+</p>
+</div>
+</main>
+
+<script>// log in sign up
+
+/* Dark mode */
+const themeBtn = document.getElementById("theme");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  if (themeBtn) themeBtn.textContent = "☀️";
+}
+
+if (themeBtn) {
+  themeBtn.addEventListener("click", function () {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+      themeBtn.textContent = "☀️";
+      themeBtn.setAttribute("aria-label", "Switch to light mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      themeBtn.textContent = "🌙";
+      themeBtn.setAttribute("aria-label", "Switch to dark mode");
+      localStorage.setItem("theme", "light");
+    }
+  });
+}
+
+/* Mobile menu */
+const menuBtn = document.getElementById("menubtn");
+const links = document.getElementById("links");
+
+if (menuBtn) {
+  menuBtn.addEventListener("click", function () {
+    links.classList.toggle("active");
+    menuBtn.setAttribute("aria-expanded", links.classList.contains("active"));
+  });
+
+  // menu click 
+  links.querySelectorAll("a").forEach(function (a) {
+    a.addEventListener("click", function () {
+      links.classList.remove("active");
+      menuBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
+/* Show Code/Hide Code */
+document.querySelectorAll(".card").forEach(function (card) {
+  const openBtn = card.querySelector(".codebtn");
+  const closeBtn = card.querySelector(".closebtn");
+
+  openBtn.addEventListener("click", function () {
+    card.classList.add("open");
+    openBtn.setAttribute("aria-expanded", "true");
+  });
+
+  closeBtn.addEventListener("click", function () {
+    card.classList.remove("open");
+    openBtn.setAttribute("aria-expanded", "false");
+  });
+});
+
+/* Back to top button */
+const toTop = document.getElementById("top");
+if (toTop) {
+  window.addEventListener("scroll", function () {
+    if (window.scrollY > 300) {
+      toTop.classList.add("show");
+    } else {
+      toTop.classList.remove("show");
+    }
+  });
+  toTop.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+/* Fade-in for facts timeline */
+const fadeWatcher = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("show");
+      fadeWatcher.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".fact, .his").forEach(function (item) {
+  item.classList.add("reveal");
+  fadeWatcher.observe(item);
+});
+</script>
+<script>// CodePalace: login / sign-up form (demo only, nothing is saved)
+
+const form = document.getElementById("loginform");
+
+if (form) {
+  const message = document.getElementById("msg");
+  let signingUp = false; // false = Log in, true = Create account
+
+  function showError(text) {
+    message.textContent = text;
+    message.style.color = "rgb(190,60,60)";
+  }
+
+  function showSuccess(text) {
+    message.textContent = text;
+    message.style.color = "rgb(20,130,80)";
+  }
+
+  /* Switch between Log in and Create account */
+  document.getElementById("switch").addEventListener("click", function () {
+    signingUp = !signingUp;
+
+    document.querySelectorAll(".signup-only").forEach(function (box) {
+      box.hidden = !signingUp;
+    });
+
+    document.getElementById("title").textContent = signingUp ? "Create your account" : "Welcome back";
+    document.getElementById("sub").textContent = signingUp ? "It takes less than a minute." : "Log in to pick up where you left off.";
+    document.getElementById("submitbtn").textContent = signingUp ? "Create account" : "Log in";
+    document.getElementById("switchtext").textContent = signingUp ? "Already have an account?" : "New to CodePalace?";
+    document.getElementById("switch").textContent = signingUp ? "Log in instead" : "Create an account";
+    message.textContent = "";
+  });
+
+  /* Check the form when it is submitted */
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); // stop the page from reloading
+
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("pass").value;
+
+    if (email === "" || pass === "") {
+      showError("Please enter your email and password.");
+      return;
+    }
+    if (!email.includes("@")) {
+      showError("Your email is not correct! ");
+      return;
+    }
+    // Log in mode stops here
+    if (!signingUp) {
+      showSuccess("Welcome back! ");
+      return;
+    }
+    // Create account mode needs a few more checks
+    const fullName =
+document.getElementById("name").value.trim();
+    const cpass = document.getElementById("cpass").value;
+    const dob = document.getElementById("dob").value;
+    const gender = document.getElementById("gender").value;
+    const terms = document.getElementById("terms").checked;
+
+    if (fullName === "" || cpass === "" || dob === "" || gender === "") {
+      showError("Please fill in every field.");
+    } else if (pass.length < 6) {
+      showError("Your password needs at least 6 characters.");
+    } else if (pass !== cpass) {
+      showError("The second passwords don’t match.");
+    } else if (!terms) {
+      showError("Please accept the terms to continue.");
+    } else {
+      showSuccess("Thanks, " + fullName + "! You are welcomed to CodePalace");
+    }
+  });
+
+  /* Clear form button also clears the message */
+  form.addEventListener("reset", function () {
+    message.textContent = "";
+  });
+}
+</script>
+</body>
+</html>
